@@ -1,7 +1,7 @@
-all: sample2D
+all: game
 
-sample2D: Sample_GL3_2D.cpp glad.c
-	g++ -o sample2D Sample_GL3_2D.cpp glad.c -lGL -lglfw -ldl
+game: mygame.cpp glad.c
+	g++ -o game mygame.cpp glad.c -lGL -lglfw -ldl -lao -lmpg123 -lm
 
 clean:
-	rm sample2D
+	rm game
