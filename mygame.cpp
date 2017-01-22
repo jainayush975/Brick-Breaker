@@ -29,9 +29,6 @@ int life=3,GameScore=0,right_mouse_clicked = 0;
 double ref[4],randomx , randomc;
 int altpressed = 0, leftpressed = 0, rightpressed = 0;
 
-typedef struct Point {
-  float x,y;
-}Point;
 typedef struct VAO {
     GLuint VertexArrayID;
     GLuint VertexBuffer;
@@ -41,6 +38,11 @@ typedef struct VAO {
     GLenum FillMode;
     int NumVertices;
 }VAO;
+typedef struct Segment {
+  float width,height,x,y;
+  int status,rot_angle;
+  VAO* object;
+} Segment;
 struct GLMatrices {
 	glm::mat4 projection;
 	glm::mat4 model;
@@ -81,7 +83,7 @@ vector < Brick> bricks;
 vector < Bricks>::iterator bit;
 vector < Mirror> mirrors;
 vector < Mirror>::iterator mit;
-
+map < int , Segment> sboard;
 Bricks MagicBrick;
 Buckets buckets;
 GLuint programID;
@@ -365,6 +367,176 @@ float triangle_rot_dir = 1;
 float rectangle_rot_dir = 1;
 bool triangle_rot_status = true;
 bool rectangle_rot_status = true;
+
+VAO* createRectangle (float height, float width)
+{
+  // GL3 accepts only Triangles. Quads are not supported
+  float w=width/2,h=height/2;
+  GLfloat vertex_buffer_data [] = {
+      -w,-h,0, // vertex 1
+      -w,h,0, // vertex 2
+      w,h,0, // vertex 3
+
+      w,h,0, // vertex 3
+      w,-h,0, // vertex 4
+      -w,-h,0  // vertex 1
+  };
+  return create3DObject(GL_TRIANGLES, 6, vertex_buffer_data, Black_rec, GL_FILL);
+}
+
+void create_board(int no)
+{
+  sboard[no].width=2;
+  sboard[no].height=10;
+  sboard[no].status=0;
+  sboard[no].rot_angle=0;
+  if(no==1)
+  {
+    sboard[no].rot_angle=90;
+    sboard[no].height=5;
+    sboard[no].x=92.5;
+    sboard[no].y=95;
+  }
+  if(no==2)
+  {
+    // sboard[no].rot_angle=0;
+    sboard[no].x=95;
+    sboard[no].y=90;
+  }
+  if(no==3)
+  {
+    sboard[no].x=95;
+    sboard[no].y=80;
+  }
+  if(no==4)
+  {
+    sboard[no].rot_angle=90;
+    sboard[no].height=5;
+    sboard[no].x=92.5;
+    sboard[no].y=75;
+  }
+  if(no==5)
+  {
+    sboard[no].x=90;
+    sboard[no].y=80;
+  }
+  if(no==6)
+  {
+    sboard[no].x=90;
+    sboard[no].y=90;
+  }
+  if(no==7)
+  {
+    sboard[no].rot_angle=90;
+    sboard[no].height=5;
+    sboard[no].x=92.5;
+    sboard[no].y=85;
+  }
+  if(no==8)
+  {
+    sboard[no].rot_angle=90;
+    sboard[no].height=5;
+    sboard[no].x=82.5;
+    sboard[no].y=95;
+  }
+  if(no==9)
+  {
+    // sboard[no].rot_angle=0;
+    sboard[no].x=85;
+    sboard[no].y=90;
+  }
+  if(no==10)
+  {
+    sboard[no].x=85;
+    sboard[no].y=80;
+  }
+  if(no==11)
+  {
+    sboard[no].rot_angle=90;
+    sboard[no].height=5;
+    sboard[no].x=82.5;
+    sboard[no].y=75;
+  }
+  if(no==12)
+  {
+    sboard[no].x=80;
+    sboard[no].y=80;
+  }
+  if(no==13)
+  {
+    sboard[no].x=80;
+    sboard[no].y=90;
+  }
+  if(no==14)
+  {
+    sboard[no].rot_angle=90;
+    sboard[no].height=5;
+    sboard[no].x=82.5;
+    sboard[no].y=85;
+  }
+  if(no==15)
+  {
+    sboard[no].rot_angle=90;
+    sboard[no].height=4;
+    sboard[no].x=75;
+    sboard[no].y=85;
+  }
+  sboard[no].object = createRectangle (sboard[no].height,sboard[no].width);
+}
+void check_score(int score)
+{
+  if(score==99)
+  {
+    cout<<"Congratulations! \n You Win\n";
+  }
+  if(score==-99)
+  {
+    cout<<"Oops! \n You Lose\n";
+  }
+
+  int o,t,nf=0,i;
+  for(i=1;i<=15;i++)
+    sboard[i].status=0;
+  if(score<0)
+    {
+      sboard[15].status=1;
+      score*=-1;
+    }
+  o=score%10;
+  t=score/10;
+  if(sboard[15].status)
+    score*=-1;
+  if(o==0 || o==2 || o==3 || o==5 || o==6 || o==7 || o==8 || o==9)
+    sboard[1].status=1;
+  if(o==0 || o==1 || o==2 || o==3 || o==4 || o==7 || o==8 || o==9)
+    sboard[2].status=1;
+  if(o==0 || o==1 || o==3 || o==4 || o==5 || o==6 || o==7 || o==8 || o==9)
+    sboard[3].status=1;
+  if(o==0 ||o==2 || o==3 || o==5 || o==6 || o==8 || o==9)
+    sboard[4].status=1;
+  if(o==0 || o==2 || o==6 || o==8)
+    sboard[5].status=1;
+  if(o==0  || o==4 || o==5 || o==6 || o==8 || o==9)
+    sboard[6].status=1;
+  if( o==2 || o==3 || o==4 || o==5 || o==6 || o==8 || o==9 )
+    sboard[7].status=1;
+  if(t==0 || t==2 || t==3 || t==5 || t==6 || t==7 || t==8 || t==9)
+    sboard[8].status=1;
+  if(t==0 || t==1 || t==2 || t==3 || t==4 || t==7 || t==8 || t==9)
+    sboard[9].status=1;
+  if(t==0 || t==1 || t==3 || t==4 || t==5 || t==6 || t==7 || t==8 || t==9)
+    sboard[10].status=1;
+  if(t==0 ||t==2 || t==3 || t==5 || t==6 || t==8 || t==9)
+    sboard[11].status=1;
+  if(t==0 || t==2 || t==6 || t==8)
+    sboard[12].status=1;
+  if(t==0 || t==4 || t==5 || t==6 || t==8 || t==9)
+    sboard[13].status=1;
+  if( t==2 || t==3 || t==4 || t==5 || t==6 || t==8 || t==9 )
+    sboard[14].status=1;
+
+}
+
 VAO* createCircle (float r, int NoOfParts, int fill)
 {
     int parts = NoOfParts;
@@ -669,6 +841,10 @@ void draw (GLFWwindow* window){
   render(border, VP, 90.0f, -100.0f, 0.0f, 0.0f);
   render(PartitionLine,VP,0.0f,0.0f,0.0f,0.0f);
 
+  for(int i=1; i<=15; i++)
+    if(sboard[i].status==1)
+      render(sboard[i].object, VP, sboard[i].rot_angle, sboard[i].x, sboard[i].y, 0.0f);
+
   render(buckets.Bucket_red,VP,0.0f,buckets.posx[0],buckets.posy[0],0.0f);
   render(buckets.Bucket_green,VP,0.0f,buckets.posx[1],buckets.posy[1],0.0f);
   for (mit = mirrors.begin() ; mit != mirrors.end() ; mit++)
@@ -702,6 +878,11 @@ void makeMirrors() {
   mirrors.push_back(newMirror);
 }
 void makeEnvironment(){
+
+  for(int i=1; i<=15; i++){
+    create_board(i);
+  }
+
   border = create3DObject(GL_TRIANGLES, 6, Border_buffer, Black_rec, GL_FILL);
   PartitionLine = create3DObject(GL_TRIANGLES, 6, partition_buffer, Black_rec, GL_FILL);
   buckets.posx[0] = -50;buckets.posx[1] = 50;
@@ -969,6 +1150,7 @@ int main (int argc, char** argv)
         MoveBricks();
         CheckAllReflection();
         MoveMagicBrick();
+        check_score(GameScore);
 
 
         draw(window);

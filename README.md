@@ -8,7 +8,7 @@
   * Game provides 3 lives at start.
   * You need to make your High Score.
   * When ever your lives ends, Game Over.
-  * Points are displayed at termial.
+  * Points are displayed on Right Top corner of screen.
   * Lives remaining are displyed at terminal.
   * Game has laser gun which is vertically movable and can shoot at different angles.
   * Laser gun takes 0.5 second to shoot again.
@@ -52,7 +52,7 @@
 
 
 ####Additional Features
-  * Added sound features to make game more fun.
+  * Added sound features to make game more interesting.
   * Colour changing Bonous Bricks which makes game interesting.
   * Customizable bricks falling speed to make game fun for all.
   * Moving the buckets with the help of mouse.
